@@ -23,6 +23,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     
     int filasMarcianos=5;
     int columnasMarcianos=10;
+    int contador=0;
     
     BufferedImage buffer=null;
     
@@ -34,6 +35,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         }      
     });
     
+    Marciano marciano=new Marciano(ANCHOPANTALLA);//inicializo el marciano
+    
     /**
      * Creates new form VentanaJuego
      */
@@ -43,7 +46,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         
-        buffer=(BufferedImage) jPanel1.createImage(ANCHOPANTALLA, ALTOPANTALLA);
+        buffer=(BufferedImage) jPanel1.createImage(ANCHOPANTALLA, ALTOPANTALLA);//inicializo el buffer
         buffer.createGraphics();
         
         temporizador.start();//arranco el temporizador
@@ -51,10 +54,22 @@ public class VentanaJuego extends javax.swing.JFrame {
     
     private void bucleJuego() {//redibuja los objetos en el jPanel1
         
-        Graphics2D g2=(Graphics2D) buffer.getGraphics();//boro todo lo que ahi en el buffer
+        Graphics2D g2=(Graphics2D) buffer.getGraphics();//borro todo lo que ahi en el buffer
         
-        g2.setColor(Color.BLACK);
+        g2.setColor(Color.BLACK);//doy el color negro a la pantalla
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
+        
+        contador++;
+        if(contador<50){
+            g2.drawImage(marciano.imagen1, 10, 10, null);//dibujo el marciano1
+        }
+        else if(contador<100){
+            g2.drawImage(marciano.imagen2, 10, 10, null);//dibujo el marciano2
+        }
+        else{
+            contador=0;
+        }
+        
         
         g2=(Graphics2D) jPanel1.getGraphics();//dibujo de golpe el buffer sobre el jPanel
         g2.drawImage(buffer, 0, 0, null);
