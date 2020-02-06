@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.Timer;
 
@@ -35,7 +36,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         }      
     });
     
-    Marciano marciano=new Marciano(ANCHOPANTALLA);//inicializo el marciano
+    Marciano marciano=new Marciano(ANCHOPANTALLA);
+    Nave nave =new Nave();
     
     /**
      * Creates new form VentanaJuego
@@ -50,6 +52,9 @@ public class VentanaJuego extends javax.swing.JFrame {
         buffer.createGraphics();
         
         temporizador.start();//arranco el temporizador
+        
+        nave.posX=ANCHOPANTALLA/2-nave.imagen.getWidth(this)/2;//coloco la nave en la pantalla
+        nave.posY=ALTOPANTALLA-100;
     }
     
     private void bucleJuego() {//redibuja los objetos en el jPanel1
@@ -70,6 +75,8 @@ public class VentanaJuego extends javax.swing.JFrame {
             contador=0;
         }
         
+        g2.drawImage(nave.imagen, nave.posX, nave.posY, null);//dibujo la nave
+        nave.mueve();
         
         g2=(Graphics2D) jPanel1.getGraphics();//dibujo de golpe el buffer sobre el jPanel
         g2.drawImage(buffer, 0, 0, null);
@@ -87,6 +94,15 @@ public class VentanaJuego extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPanel1KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jPanel1KeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -112,6 +128,30 @@ public class VentanaJuego extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
+        
+        switch(evt.getKeyCode()){
+            case KeyEvent.VK_LEFT:
+                nave.setPulsarIzq(true);
+                break;
+            case KeyEvent.VK_RIGHT:
+                nave.setPulsarDrech(true);
+                break;
+        }
+    }//GEN-LAST:event_jPanel1KeyPressed
+
+    private void jPanel1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyReleased
+        
+        switch(evt.getKeyCode()){
+            case KeyEvent.VK_LEFT:
+                nave.setPulsarIzq(false);
+                break;
+            case KeyEvent.VK_RIGHT:
+                nave.setPulsarDrech(false);
+                break;
+        }
+    }//GEN-LAST:event_jPanel1KeyReleased
 
     /**
      * @param args the command line arguments
