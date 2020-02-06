@@ -38,6 +38,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     
     Marciano marciano=new Marciano(ANCHOPANTALLA);
     Nave nave =new Nave();
+    Disparo disparo=new Disparo();
     
     /**
      * Creates new form VentanaJuego
@@ -78,6 +79,9 @@ public class VentanaJuego extends javax.swing.JFrame {
         g2.drawImage(nave.imagen, nave.posX, nave.posY, null);//dibujo la nave
         nave.mueve();
         
+        g2.drawImage(disparo.imagen, disparo.posX, disparo.posY, null);//dibujo el disparo
+        disparo.mueve();
+        
         g2=(Graphics2D) jPanel1.getGraphics();//dibujo de golpe el buffer sobre el jPanel
         g2.drawImage(buffer, 0, 0, null);
         }
@@ -94,13 +98,12 @@ public class VentanaJuego extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+        addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jPanel1KeyPressed(evt);
+                formKeyPressed(evt);
             }
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                jPanel1KeyReleased(evt);
+                formKeyReleased(evt);
             }
         });
 
@@ -129,8 +132,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
-        
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         switch(evt.getKeyCode()){
             case KeyEvent.VK_LEFT:
                 nave.setPulsarIzq(true);
@@ -138,11 +140,13 @@ public class VentanaJuego extends javax.swing.JFrame {
             case KeyEvent.VK_RIGHT:
                 nave.setPulsarDrech(true);
                 break;
+            case KeyEvent.VK_SPACE:
+                disparo.posDisparo(nave);
+                break;
         }
-    }//GEN-LAST:event_jPanel1KeyPressed
+    }//GEN-LAST:event_formKeyPressed
 
-    private void jPanel1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyReleased
-        
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
         switch(evt.getKeyCode()){
             case KeyEvent.VK_LEFT:
                 nave.setPulsarIzq(false);
@@ -151,7 +155,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                 nave.setPulsarDrech(false);
                 break;
         }
-    }//GEN-LAST:event_jPanel1KeyReleased
+    }//GEN-LAST:event_formKeyReleased
 
     /**
      * @param args the command line arguments
