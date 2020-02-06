@@ -34,11 +34,11 @@ public class Nave {
     
     public void mueve(){
         
-        if(pulsarIzq){
-            posX--;
+        if(pulsarIzq && posX>0){
+            posX-=3;
         }
-        if(pulsarDrech){
-            posX++;
+        if(pulsarDrech && posX<VentanaJuego.ANCHOPANTALLA-imagen.getWidth(null)){
+            posX+=3;
         }
     }
 
