@@ -1,8 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+*
+*Ventana principal del juego SpaceInvaders
+*
+*/
 package codigo;
 
 import java.awt.Color;
@@ -26,6 +26,8 @@ public class VentanaJuego extends javax.swing.JFrame {
     int columnasMarcianos=10;
     int contador=0;
     
+    boolean direccionMarcianos=false;
+    
     BufferedImage buffer=null;
     
     Timer temporizador=new Timer(10, new ActionListener() {//bucle de animacion del juego. refresca el contenido de la pantalla
@@ -33,12 +35,14 @@ public class VentanaJuego extends javax.swing.JFrame {
         public void actionPerformed(ActionEvent ae) {
             //TODO: codigo de animacion
             bucleJuego();
-        }      
+        }
     });
     
     Marciano marciano=new Marciano(ANCHOPANTALLA);
     Nave nave =new Nave();
     Disparo disparo=new Disparo();
+    
+    Marciano[][] listaMarcianos=new Marciano[filasMarcianos][columnasMarcianos];//array de dos dimensiones
     
     /**
      * Creates new form VentanaJuego
@@ -56,6 +60,45 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         nave.posX=ANCHOPANTALLA/2-nave.imagen.getWidth(this)/2;//coloco la nave en la pantalla
         nave.posY=ALTOPANTALLA-100;
+        
+        for (int i=0; i<filasMarcianos; i++) {//creamos el array de marcianos
+            for (int j=0; j<columnasMarcianos; j++) {
+                
+                listaMarcianos[i][j]=new Marciano(ANCHOPANTALLA);
+                
+                listaMarcianos[i][j].posX=j * (15 + listaMarcianos[i][j].imagen1.getWidth(null));
+                listaMarcianos[i][j].posY=i * (10 + listaMarcianos[i][j].imagen1.getHeight(null));
+            }
+        }
+    }
+    
+    private void pintaMarcianos(Graphics2D _g2){
+        for(int i=0; i<filasMarcianos; i++){
+            for(int j=0; j<columnasMarcianos; j++){
+                
+                listaMarcianos[i][j].mueve(direccionMarcianos);
+                
+                if(listaMarcianos[i][j].posX>=ANCHOPANTALLA-listaMarcianos[i][j].imagen1.getWidth(null) || listaMarcianos[i][j].posX<=0){
+                    direccionMarcianos=!direccionMarcianos;
+                    
+                    for(int k=0; k<filasMarcianos; k++){
+                        for(int m=0; m<columnasMarcianos; m++){
+                            listaMarcianos[k][m].posY+=listaMarcianos[k][m].imagen1.getHeight(null);
+                        }
+                    }
+                }
+                                
+                if(contador<50){
+                    _g2.drawImage(listaMarcianos[i][j].imagen1, listaMarcianos[i][j].posX, listaMarcianos[i][j].posY, null);//dibujo el marciano1
+                }
+                else if(contador<100){
+                    _g2.drawImage(listaMarcianos[i][j].imagen2, listaMarcianos[i][j].posX, listaMarcianos[i][j].posY, null);//dibujo el marciano2
+                }
+                else{
+                    contador=0;
+                }
+            }
+        }
     }
     
     private void bucleJuego() {//redibuja los objetos en el jPanel1
@@ -66,15 +109,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
         
         contador++;
-        if(contador<50){
-            g2.drawImage(marciano.imagen1, 10, 10, null);//dibujo el marciano1
-        }
-        else if(contador<100){
-            g2.drawImage(marciano.imagen2, 10, 10, null);//dibujo el marciano2
-        }
-        else{
-            contador=0;
-        }
+        pintaMarcianos(g2);
         
         g2.drawImage(nave.imagen, nave.posX, nave.posY, null);//dibujo la nave
         nave.mueve();
@@ -84,8 +119,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         g2=(Graphics2D) jPanel1.getGraphics();//dibujo de golpe el buffer sobre el jPanel
         g2.drawImage(buffer, 0, 0, null);
-        }
-
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -133,7 +168,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        switch(evt.getKeyCode()){
+        switch(evt.getKeyCode()){//detecta que tecla se esta presionando
             case KeyEvent.VK_LEFT:
                 nave.setPulsarIzq(true);
                 break;
@@ -147,7 +182,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     }//GEN-LAST:event_formKeyPressed
 
     private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
-        switch(evt.getKeyCode()){
+        switch(evt.getKeyCode()){//detecta que tecla se esta pulsando
             case KeyEvent.VK_LEFT:
                 nave.setPulsarIzq(false);
                 break;
@@ -156,7 +191,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                 break;
         }
     }//GEN-LAST:event_formKeyReleased
-
+    
     /**
      * @param args the command line arguments
      */
@@ -164,8 +199,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+        */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -183,7 +218,7 @@ public class VentanaJuego extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(VentanaJuego.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
