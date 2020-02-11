@@ -82,7 +82,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         temporizador.start();//arranco el temporizador
         
-        nave.imagen=imagenes[21];
+        nave.imagen=imagenes[21];//pongo el sprite de la nave en la imagen
         nave.posX=ANCHOPANTALLA/2-nave.imagen.getWidth(this)/2;//coloco la nave en la pantalla
         nave.posY=ALTOPANTALLA-100;
         
@@ -144,8 +144,12 @@ public class VentanaJuego extends javax.swing.JFrame {
                 rectanguloMarciano.setFrame(listaMarcianos[i][j].posX, listaMarcianos[i][j].posY, listaMarcianos[i][j].imagen1.getWidth(null), listaMarcianos[i][j].imagen1.getHeight(null));//calculo el rectangulo que contiene a cada marciano
                 if(rectanguloDisparo.intersects(rectanguloMarciano)){//si entra aqui es porque ha chocado un disparo y un marciano
                     
-                    listaMarcianos[i][j].posY=2000;//recoloco el marciano para que parezca que ha desaparecido
+                    listaMarcianos[i][j].posY=-2000;//recoloco el marciano para que parezca que ha desaparecido
                     disparo.posY=-2000;//recoloco el disparo para que parezca que ha desaparecido
+                }
+                
+                if(listaMarcianos[i][j].posY>=nave.posY-nave.imagen.getHeight(null)){
+                    temporizador.stop();
                 }
             }
         }        
