@@ -31,7 +31,7 @@ public class Disparo {
     }
     
     public void mueve(){
-        posY--;
+        posY-=5;
     }
     
     public void posDisparo(Nave _nave){
