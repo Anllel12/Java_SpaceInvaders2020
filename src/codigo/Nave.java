@@ -24,12 +24,7 @@ public class Nave {
     
     public Nave(){
         
-        try{
-            imagen=ImageIO.read(getClass().getResource("/imagenes/nave.png"));
-        }
-        catch(Exception e){
-            System.out.println("No es capaz de leer la imagen");
-        }
+        
     }
     
     public void mueve(){

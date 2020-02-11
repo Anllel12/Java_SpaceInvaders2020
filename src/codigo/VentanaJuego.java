@@ -66,11 +66,14 @@ public class VentanaJuego extends javax.swing.JFrame {
             System.out.println("No es capaz de leer la imagen");
         }
         
-        for(int i=0; i<6; i++){//cargo las 30 imagenes del sprite sheet en el array de BuferedImage
-            for (int j=0; j<5; j++) {
-                imagenes[i*5+j]=plantilla.getSubimage(j*32, i*32, 64, 64).getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+        for(int i=0; i<5; i++){//cargo las 30 imagenes del sprite sheet en el array de BuferedImage
+            for (int j=0; j<4; j++) {
+                imagenes[i*4+j]=plantilla.getSubimage(j*64, i*64, 64, 64).getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             }
         }
+        
+        imagenes[20]=plantilla.getSubimage(0, 320, 66, 32);//sprite nave extraña
+        imagenes[21]=plantilla.getSubimage(66, 320, 64, 32);//sprite nave
         
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         
@@ -79,6 +82,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         temporizador.start();//arranco el temporizador
         
+        nave.imagen=imagenes[21];
         nave.posX=ANCHOPANTALLA/2-nave.imagen.getWidth(this)/2;//coloco la nave en la pantalla
         nave.posY=ALTOPANTALLA-100;
         
@@ -87,8 +91,8 @@ public class VentanaJuego extends javax.swing.JFrame {
                 
                 listaMarcianos[i][j]=new Marciano(ANCHOPANTALLA);
                 
-                listaMarcianos[i][j].imagen1=imagenes[4];//cambio la imagen del marciano
-                listaMarcianos[i][j].imagen2=imagenes[9];
+                listaMarcianos[i][j].imagen1=imagenes[2*i];//cambio la imagen del marciano
+                listaMarcianos[i][j].imagen2=imagenes[2*i+1];
                 
                 listaMarcianos[i][j].posX=j * (15 + listaMarcianos[i][j].imagen1.getWidth(null));
                 listaMarcianos[i][j].posY=i * (10 + listaMarcianos[i][j].imagen1.getHeight(null));
