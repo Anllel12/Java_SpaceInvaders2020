@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -21,7 +22,7 @@ import javax.swing.Timer;
 
 /**
  *
- * @author jorgecisneros
+ * @author Angel Esquinas
  */
 public class VentanaJuego extends javax.swing.JFrame {
     
@@ -48,6 +49,8 @@ public class VentanaJuego extends javax.swing.JFrame {
     Marciano marciano=new Marciano(ANCHOPANTALLA);
     Nave nave =new Nave();
     Disparo disparo=new Disparo();
+    
+    ArrayList<Disparo> listaDisparos=new ArrayList();//creo el ArrayList
     
     Image[] imagenes=new Image[30];//array para guardar las imagenes de los marcianos
     Marciano[][] listaMarcianos=new Marciano[filasMarcianos][columnasMarcianos];//array de dos dimensiones
@@ -102,6 +105,24 @@ public class VentanaJuego extends javax.swing.JFrame {
         disparo.posY=-2000;
     }
     
+    private void pintaDisparos(Graphics2D _g2){
+        
+        Disparo disparoAux;
+        
+        for (int i=0; i<listaDisparos.size(); i++) {
+            
+            disparoAux=listaDisparos.get(i);
+            
+            disparoAux.mueve();           
+            if (disparoAux.posY<0){//si sale por la pantalla lo elimino
+                 listaDisparos.remove(i);
+            }
+            else{
+                _g2.drawImage(disparoAux.imagen, disparoAux.posX, disparoAux.posY, null);//dibujo el disparo
+            }
+        }
+    }
+    
     private void pintaMarcianos(Graphics2D _g2){
         for(int i=0; i<filasMarcianos; i++){
             for(int j=0; j<columnasMarcianos; j++){
@@ -148,7 +169,7 @@ public class VentanaJuego extends javax.swing.JFrame {
                     disparo.posY=-2000;//recoloco el disparo para que parezca que ha desaparecido
                 }
                 
-                if(listaMarcianos[i][j].posY>=nave.posY-nave.imagen.getHeight(null)){
+                if(listaMarcianos[i][j].posY>=nave.posY-nave.imagen.getHeight(null)){//si un marciano llega a la altura del la nave se para el tiempo
                     temporizador.stop();
                 }
             }
@@ -164,14 +185,12 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         contador++;
         pintaMarcianos(g2);
+        pintaDisparos(g2);
         
         g2.drawImage(nave.imagen, nave.posX, nave.posY, null);//dibujo la nave
         nave.mueve();
-        
-        g2.drawImage(disparo.imagen, disparo.posX, disparo.posY, null);//dibujo el disparo
-        disparo.mueve();
-        
-        chequeaColision();
+                     
+        chequeaColision();//chequeo la colision del disparo con el marciano y tambien si un marciano esta a la altura de la nave
         
         g2=(Graphics2D) jPanel1.getGraphics();//dibujo de golpe el buffer sobre el jPanel
         g2.drawImage(buffer, 0, 0, null);
@@ -232,7 +251,9 @@ public class VentanaJuego extends javax.swing.JFrame {
                 nave.setPulsarDrech(true);
                 break;
             case KeyEvent.VK_SPACE:
-                disparo.posDisparo(nave);
+                Disparo d=new Disparo();
+                d.posDisparo(nave);
+                listaDisparos.add(d);//agregamos el disparo a la lista de disparos
                 break;
         }
     }//GEN-LAST:event_formKeyPressed
