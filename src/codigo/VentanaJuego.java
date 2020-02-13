@@ -78,8 +78,8 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         imagenes[20]=plantilla.getSubimage(0, 320, 66, 32);//sprite nave extraña
         imagenes[21]=plantilla.getSubimage(66, 320, 64, 32);//sprite nave
-        imagenes[22]=plantilla.getSubimage(130, 320, 64, 32);//sprite explosion nave
-        imagenes[23]=plantilla.getSubimage(196, 320, 64, 32);//sprite explosion marciano
+        imagenes[22]=plantilla.getSubimage(255, 320, 32, 32);//sprite explosion nave
+        imagenes[23]=plantilla.getSubimage(255, 289, 32, 32);//sprite explosion marciano
         
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         
@@ -198,8 +198,9 @@ public class VentanaJuego extends javax.swing.JFrame {
                         e.posX=listaMarcianos[i][j].posX;
                         e.posY=listaMarcianos[i][j].posY;
                         e.imagen1=imagenes[23];//pongo la imagen de la explosion
-                        e.imagen1=imagenes[22];
+                        e.imagen2=imagenes[22];
                         listaExplosiones.add(e);
+                        e.sonidoExplosion.start();//suena el audio
                         
                         listaMarcianos[i][j].posY=-2000;//recoloco el marciano para que parezca que ha desaparecido
                         listaDisparos.remove(k);//elimino el disparo que ha dado a un marciano
@@ -292,6 +293,7 @@ public class VentanaJuego extends javax.swing.JFrame {
             case KeyEvent.VK_SPACE:
                 Disparo d=new Disparo();
                 d.posDisparo(nave);
+                d.sonidoDisparo.start();//añado el sonido
                 listaDisparos.add(d);//agregamos el disparo a la lista de disparos
                 break;
         }

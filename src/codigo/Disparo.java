@@ -6,7 +6,12 @@
 package codigo;
 
 import java.awt.Image;
+import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  *
@@ -19,6 +24,11 @@ public class Disparo {
     public int posX=0;
     public int posY=0;
     
+    Clip sonidoDisparo;
+    
+    
+        
+        
     
     public Disparo(){
         
@@ -27,6 +37,21 @@ public class Disparo {
         }
         catch(Exception e){
             System.out.println("No es capaz de leer la imagen");
+        }
+        
+        try {
+            sonidoDisparo=AudioSystem.getClip();          
+            sonidoDisparo.open(AudioSystem.getAudioInputStream(getClass().getResource("/sonidos/laser.wav")));//cargamos el sonido
+            
+        }
+        catch (LineUnavailableException ex) {
+            System.out.println("No es capaz de leer la carpeta");
+        }
+        catch (UnsupportedAudioFileException ex) {
+            System.out.println("No es capaz de cargar el audio");
+        } 
+        catch (IOException ex) {
+            System.out.println("No es capaz de leer el audio");
         }
     }
     
