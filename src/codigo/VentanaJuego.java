@@ -151,14 +151,14 @@ public class VentanaJuego extends javax.swing.JFrame {
     private void pintaMarcianos(Graphics2D _g2){
         
         Marciano marcianoAux;
-        
+        boolean cambia=false;
         for (int i = 0; i < listaMarcianos.size(); i++) {
             
             marcianoAux=listaMarcianos.get(i);
             
             marcianoAux.mueve(direccionMarcianos);
-            if(marcianoAux.posX>=ANCHOPANTALLA || marcianoAux.posX<=0){
-                direccionMarcianos=!direccionMarcianos;
+            if((marcianoAux.posX+marcianoAux.imagen1.getWidth(this))>=ANCHOPANTALLA || marcianoAux.posX<=0){              
+                cambia=true;
             }
             
             marcianoAux.vida--;
@@ -169,6 +169,15 @@ public class VentanaJuego extends javax.swing.JFrame {
             else{
                 _g2.drawImage(marcianoAux.imagen2, marcianoAux.posX, marcianoAux.posY, null);//dibujo la explosion2
             }
+        }
+        
+        if (cambia) {
+            direccionMarcianos=!direccionMarcianos;
+                    for (int i = 0; i < listaMarcianos.size(); i++) {
+            
+                        marcianoAux=listaMarcianos.get(i);
+                        marcianoAux.posY+=marcianoAux.imagen1.getHeight(this);
+                    }
         }
     }
     
