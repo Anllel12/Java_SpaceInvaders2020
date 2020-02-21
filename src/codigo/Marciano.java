@@ -27,8 +27,7 @@ public class Marciano {
     public Marciano(int _anchoPantalla){
         
         anchoPantalla=_anchoPantalla;
-        
-        
+              
     }
     
     public void mueve(boolean _direccionMarciano){

@@ -34,6 +34,7 @@ public class VentanaJuego extends javax.swing.JFrame {
     int contador=0;
     
     boolean direccionMarcianos=true;
+    boolean tiro=true;
     
     BufferedImage buffer=null;
     BufferedImage plantilla=null;//buffer para guardar las imagenes de los marcianos
@@ -52,10 +53,9 @@ public class VentanaJuego extends javax.swing.JFrame {
     
     ArrayList<Disparo> listaDisparos=new ArrayList();//creo el ArrayList de Disparos
     ArrayList<Explosion> listaExplosiones=new ArrayList();//creo el ArrayList de Explosiones
-    ArrayList<Marciano[][]> listMarcianos=new ArrayList<Marciano[][]>();//creo el ArrayList de Marcianos
+    ArrayList<Marciano> listaMarcianos=new ArrayList();//creo el ArrayList de Marcianos
     
     Image[] imagenes=new Image[30];//array para guardar las imagenes de los marcianos
-    Marciano[][] listaMarcianos=new Marciano[filasMarcianos][columnasMarcianos];//array de dos dimensiones
     
     /**
      * Creates new form VentanaJuego
@@ -93,20 +93,18 @@ public class VentanaJuego extends javax.swing.JFrame {
         nave.posX=ANCHOPANTALLA/2-nave.imagen.getWidth(this)/2;//coloco la nave en la pantalla
         nave.posY=ALTOPANTALLA-100;
         
-        for (int i=0; i<filasMarcianos; i++) {//creamos el array de marcianos
-            for (int j=0; j<columnasMarcianos; j++) {
+        for (int i = 0; i < filasMarcianos; i++) {
+            for (int j = 0; j < columnasMarcianos; j++) {
                 
-                listaMarcianos[i][j]=new Marciano(ANCHOPANTALLA);
+                Marciano m=new Marciano(ANCHOPANTALLA);
                 
-                listaMarcianos[i][j].imagen1=imagenes[2*i];//cambio la imagen del marciano
-                listaMarcianos[i][j].imagen2=imagenes[2*i+1];
-                
-                listaMarcianos[i][j].posX=j * (15 + listaMarcianos[i][j].imagen1.getWidth(null));
-                listaMarcianos[i][j].posY=i * (10 + listaMarcianos[i][j].imagen1.getHeight(null));
+                m.imagen1 = imagenes[2 * i];
+                m.imagen2 = imagenes[2 * i + 1];
+                m.posX = j * (15 + m.imagen1.getWidth(null));
+                m.posY = i * (10 + m.imagen1.getHeight(null));
+                listaMarcianos.add(m);
             }
         }
-        
-        disparo.posY=-2000;
     }
     
     private void pintaDisparos(Graphics2D _g2){
@@ -151,30 +149,25 @@ public class VentanaJuego extends javax.swing.JFrame {
     }
     
     private void pintaMarcianos(Graphics2D _g2){
-        for(int i=0; i<filasMarcianos; i++){
-            for(int j=0; j<columnasMarcianos; j++){
-                
-                listaMarcianos[i][j].mueve(direccionMarcianos);
-                
-                if(listaMarcianos[i][j].posX==ANCHOPANTALLA-listaMarcianos[i][j].imagen1.getWidth(null)-listaMarcianos[i][j].imagen1.getWidth(null)/3 || listaMarcianos[i][j].posX==0){
-                    direccionMarcianos=!direccionMarcianos;
-                    
-                    for(int k=0; k<filasMarcianos; k++){
-                        for(int m=0; m<columnasMarcianos; m++){
-                            listaMarcianos[k][m].posY+=listaMarcianos[k][m].imagen1.getHeight(null);
-                        }
-                    }
-                }
-                
-                if(contador<50){
-                    _g2.drawImage(listaMarcianos[i][j].imagen1, listaMarcianos[i][j].posX, listaMarcianos[i][j].posY, null);//dibujo el marciano1
-                }
-                else if(contador<100){
-                    _g2.drawImage(listaMarcianos[i][j].imagen2, listaMarcianos[i][j].posX, listaMarcianos[i][j].posY, null);//dibujo el marciano2
-                }
-                else{
-                    contador=0;
-                }
+        
+        Marciano marcianoAux;
+        
+        for (int i = 0; i < listaMarcianos.size(); i++) {
+            
+            marcianoAux=listaMarcianos.get(i);
+            
+            marcianoAux.mueve(direccionMarcianos);
+            if(marcianoAux.posX>=ANCHOPANTALLA || marcianoAux.posX<=0){
+                direccionMarcianos=!direccionMarcianos;
+            }
+            
+            marcianoAux.vida--;
+            
+            if (marcianoAux.vida>25){
+                _g2.drawImage(marcianoAux.imagen1, marcianoAux.posX, marcianoAux.posY, null);//dibujo la explosion1
+            }
+            else{
+                _g2.drawImage(marcianoAux.imagen2, marcianoAux.posX, marcianoAux.posY, null);//dibujo la explosion2
             }
         }
     }
@@ -188,28 +181,28 @@ public class VentanaJuego extends javax.swing.JFrame {
             
             rectanguloDisparo.setFrame(listaDisparos.get(k).posX, listaDisparos.get(k).posY, listaDisparos.get(k).imagen.getWidth(null), listaDisparos.get(k).imagen.getHeight(null));//calculo el rectangulo que contiene al disparo
             
-            for(int i=0; i<filasMarcianos; i++){
-                for(int j=0; j<columnasMarcianos; j++){
-                    
-                    rectanguloMarciano.setFrame(listaMarcianos[i][j].posX, listaMarcianos[i][j].posY, listaMarcianos[i][j].imagen1.getWidth(null), listaMarcianos[i][j].imagen1.getHeight(null));//calculo el rectangulo que contiene a cada marciano
-                    
-                    if(rectanguloDisparo.intersects(rectanguloMarciano)){//si entra aqui es porque ha chocado un disparo y un marciano
-                        
-                        Explosion e=new Explosion();
-                        e.posX=listaMarcianos[i][j].posX;
-                        e.posY=listaMarcianos[i][j].posY;
-                        e.imagen1=imagenes[23];//pongo la imagen de la explosion
-                        e.imagen2=imagenes[22];
-                        listaExplosiones.add(e);
-                        e.sonidoExplosion.start();//suena el audio
-                        
-                        listaMarcianos[i][j].posY=-2000;//recoloco el marciano para que parezca que ha desaparecido
-                        listaDisparos.remove(k);//elimino el disparo que ha dado a un marciano
-                    }
-                }
+            for (int i = 0; i < listaMarcianos.size(); i++) {
+                            
+            rectanguloMarciano.setFrame(listaMarcianos.get(i).posX, listaMarcianos.get(i).posY, listaMarcianos.get(i).imagen1.getWidth(null), listaMarcianos.get(i).imagen1.getHeight(null));//calculo el rectangulo que contiene a cada marciano
+            
+            if(rectanguloDisparo.intersects(rectanguloMarciano)){//si entra aqui es porque ha chocado un disparo y un marciano
+                
+                Explosion e=new Explosion();
+                e.posX=listaMarcianos.get(i).posX;
+                e.posY=listaMarcianos.get(i).posY;
+                e.imagen1=imagenes[23];//pongo la imagen de la explosion
+                e.imagen2=imagenes[22];
+                listaExplosiones.add(e);
+                e.sonidoExplosion.start();//suena el audio
+                
+                listaMarcianos.remove(i);
+                listaDisparos.remove(k);//elimino el disparo que ha dado a un marciano
+            }
             }
         }
     }
+    
+    
     
     private void bucleJuego() {//redibuja los objetos en el jPanel1
         
@@ -288,10 +281,13 @@ public class VentanaJuego extends javax.swing.JFrame {
                 nave.setPulsarDrech(true);
                 break;
             case KeyEvent.VK_SPACE:
-                Disparo d=new Disparo();
-                d.posDisparo(nave);
-                d.sonidoDisparo.start();//añado el sonido
-                listaDisparos.add(d);//agregamos el disparo a la lista de disparos
+                if(tiro){
+                    Disparo d=new Disparo();
+                    d.posDisparo(nave);
+                    d.sonidoDisparo.start();//añado el sonido
+                    listaDisparos.add(d);//agregamos el disparo a la lista de disparos
+                    tiro=false;
+                }
                 break;
         }
     }//GEN-LAST:event_formKeyPressed
@@ -304,6 +300,9 @@ public class VentanaJuego extends javax.swing.JFrame {
                 break;
             case KeyEvent.VK_RIGHT:
                 nave.setPulsarDrech(false);
+                break;
+            case KeyEvent.VK_SPACE:
+                tiro=true;
                 break;
         }
     }//GEN-LAST:event_formKeyReleased
