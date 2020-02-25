@@ -31,7 +31,8 @@ public class VentanaJuego extends javax.swing.JFrame {
     
     int filasMarcianos=5;
     int columnasMarcianos=10;
-    int contador=0;
+    
+    int velocidad=1;//velodidad de los marcinos
     
     boolean direccionMarcianos=true;
     boolean tiro=true;
@@ -79,8 +80,9 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         imagenes[20]=plantilla.getSubimage(0, 320, 66, 32);//sprite nave extraña
         imagenes[21]=plantilla.getSubimage(66, 320, 64, 32);//sprite nave
-        imagenes[22]=plantilla.getSubimage(255, 320, 32, 32);//sprite explosion nave
-        imagenes[23]=plantilla.getSubimage(255, 289, 32, 32);//sprite explosion marciano
+        imagenes[22]=plantilla.getSubimage(255, 320, 32, 32);//sprite explosion marciano 1
+        imagenes[23]=plantilla.getSubimage(255, 289, 32, 32);//sprite explosion marciano 2
+        imagenes[24]=plantilla.getSubimage(132, 320, 64, 32);//sprite explosion nave
         
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
         
@@ -151,13 +153,19 @@ public class VentanaJuego extends javax.swing.JFrame {
     private void pintaMarcianos(Graphics2D _g2){
         
         Marciano marcianoAux;
+        
         boolean cambia=false;
+        
+        velocidad();
+        
         for (int i = 0; i < listaMarcianos.size(); i++) {
             
             marcianoAux=listaMarcianos.get(i);
             
+            marcianoAux._velocidad=velocidad;//cambia la velocidad
             marcianoAux.mueve(direccionMarcianos);
-            if((marcianoAux.posX+marcianoAux.imagen1.getWidth(this))>=ANCHOPANTALLA || marcianoAux.posX<=0){              
+            
+            if((marcianoAux.posX+marcianoAux.imagen1.getWidth(this))>=ANCHOPANTALLA || marcianoAux.posX<=0){
                 cambia=true;
             }
             
@@ -173,11 +181,34 @@ public class VentanaJuego extends javax.swing.JFrame {
         
         if (cambia) {
             direccionMarcianos=!direccionMarcianos;
-                    for (int i = 0; i < listaMarcianos.size(); i++) {
+            for (int i = 0; i < listaMarcianos.size(); i++) {
+                
+                marcianoAux=listaMarcianos.get(i);
+                marcianoAux.posY+=marcianoAux.imagen1.getHeight(this);
+            }
+        }
+    }
+    
+    private void fin(Graphics2D _g2){
+        for (int i = 0; i < listaMarcianos.size(); i++) {
             
-                        marcianoAux=listaMarcianos.get(i);
-                        marcianoAux.posY+=marcianoAux.imagen1.getHeight(this);
-                    }
+            if ((listaMarcianos.get(i).posY + listaMarcianos.get(i).imagen1.getHeight(null)) > nave.posY) {
+                temporizador.stop();
+                nave.imagen=imagenes[24];
+                _g2.drawImage(nave.imagen, nave.posX, nave.posY, null);//dibujo la explosion de la nave
+            }
+        }
+    }
+    
+    private void velocidad(){//Varíamos la velocidad de los marcianos en función de los que quedan        
+        if (listaMarcianos.size() == 1) {//Si queda un marciano
+            velocidad = 8;
+        } else if (listaMarcianos.size() <= 13) {//Si quedan menos de 13 marcianos
+            velocidad = 3;
+        } else if (listaMarcianos.size() <= 40) {//Si quedan menos de 13 marcianos
+            velocidad = 2;
+        } else {//Si quedan más de dos tercios de marcianos
+            velocidad = 1;
         }
     }
     
@@ -191,27 +222,27 @@ public class VentanaJuego extends javax.swing.JFrame {
             rectanguloDisparo.setFrame(listaDisparos.get(k).posX, listaDisparos.get(k).posY, listaDisparos.get(k).imagen.getWidth(null), listaDisparos.get(k).imagen.getHeight(null));//calculo el rectangulo que contiene al disparo
             
             for (int i = 0; i < listaMarcianos.size(); i++) {
-                            
-            rectanguloMarciano.setFrame(listaMarcianos.get(i).posX, listaMarcianos.get(i).posY, listaMarcianos.get(i).imagen1.getWidth(null), listaMarcianos.get(i).imagen1.getHeight(null));//calculo el rectangulo que contiene a cada marciano
+                
+                rectanguloMarciano.setFrame(listaMarcianos.get(i).posX, listaMarcianos.get(i).posY, listaMarcianos.get(i).imagen1.getWidth(null), listaMarcianos.get(i).imagen1.getHeight(null));//calculo el rectangulo que contiene a cada marciano
+                
+                if(rectanguloDisparo.intersects(rectanguloMarciano)){//si entra aqui es porque ha chocado un disparo y un marciano
+                    
+                    Explosion e=new Explosion();
+                    e.posX=listaMarcianos.get(i).posX;
+                    e.posY=listaMarcianos.get(i).posY;
+                    e.imagen1=imagenes[23];//pongo la imagen de la explosion
+                    e.imagen2=imagenes[22];
+                    listaExplosiones.add(e);
+                    e.sonidoExplosion.start();//suena el audio
+                    
+                    listaMarcianos.remove(i);
+                    
+                    listaDisparos.remove(k);//elimino el disparo que ha dado a un marciano
+                }
+            }
             
-            if(rectanguloDisparo.intersects(rectanguloMarciano)){//si entra aqui es porque ha chocado un disparo y un marciano
-                
-                Explosion e=new Explosion();
-                e.posX=listaMarcianos.get(i).posX;
-                e.posY=listaMarcianos.get(i).posY;
-                e.imagen1=imagenes[23];//pongo la imagen de la explosion
-                e.imagen2=imagenes[22];
-                listaExplosiones.add(e);
-                e.sonidoExplosion.start();//suena el audio
-                
-                listaMarcianos.remove(i);
-                listaDisparos.remove(k);//elimino el disparo que ha dado a un marciano
-            }
-            }
         }
     }
-    
-    
     
     private void bucleJuego() {//redibuja los objetos en el jPanel1
         
@@ -220,7 +251,6 @@ public class VentanaJuego extends javax.swing.JFrame {
         g2.setColor(Color.BLACK);//doy el color negro a la pantalla
         g2.fillRect(0, 0, ANCHOPANTALLA, ALTOPANTALLA);
         
-        contador++;
         pintaMarcianos(g2);
         pintaDisparos(g2);
         pintaExplosiones(g2);
@@ -229,6 +259,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         nave.mueve();
         
         chequeaColision();//chequeo la colision del disparo con el marciano y tambien si un marciano esta a la altura de la nave
+        fin(g2);
         
         g2=(Graphics2D) jPanel1.getGraphics();//dibujo de golpe el buffer sobre el jPanel
         g2.drawImage(buffer, 0, 0, null);
